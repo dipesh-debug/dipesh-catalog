@@ -20,7 +20,7 @@ export default function ColorQuantitySelector({ availableColors, onSelectionChan
           <span className="font-medium text-slate-700">{color}</span>
           <input 
             type="number" min="0" placeholder="Qty"
-            className="w-24 p-2 border rounded-md text-center focus:ring-2 focus:ring-[#3b82f6] outline-none transition-shadow"
+            className="w-24 p-2 border border-slate-200 rounded-md text-center focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow"
             value={selections[color] || ""}
             onChange={(e) => handleQuantityChange(color, parseInt(e.target.value))}
           />

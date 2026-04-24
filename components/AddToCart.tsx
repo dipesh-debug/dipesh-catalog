@@ -37,11 +37,20 @@ export default function AddToCart({ product }: { product: any }) {
       <button 
         onClick={handleAddToQuote}
         disabled={selections.length === 0}
-        className={`w-full py-4 mt-2 font-bold rounded-xl transition-all active:scale-[0.98] text-lg text-white disabled:opacity-50 disabled:cursor-not-allowed ${
-          isAdded ? 'bg-green-500 hover:bg-green-600 shadow-lg' : 'bg-[#3b82f6] hover:bg-blue-600 shadow-md hover:shadow-lg'
-        }`}
+        className={`w-full h-14 mt-4 font-bold rounded-xl transition-all active:scale-[0.98] text-xl text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+          isAdded ? 'bg-green-500 hover:bg-green-600 shadow-lg' : 'bg-[#3b82f6] hover:bg-blue-600 shadow-lg shadow-blue-500/30'
+        } ${selections.length > 0 && !isAdded ? 'animate-pulse' : ''}`}
       >
-        {isAdded ? 'Added to Quote!' : 'Add to Quote'}
+        {isAdded ? (
+          <>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Added to Quote!
+          </>
+        ) : (
+          'Add to Quote'
+        )}
       </button>
     </>
   );

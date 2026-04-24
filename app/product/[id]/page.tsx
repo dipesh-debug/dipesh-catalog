@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import AddToCart from "@/components/AddToCart";
+import Link from "next/link";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -14,12 +15,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6 md:py-10">
+      <Link href="/" className="text-sm font-medium text-slate-400 hover:text-slate-900 mb-6 inline-block transition-colors">← Back to Catalog</Link>
+
       {/* Responsive Grid: 1 col on mobile, 2 cols on desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         
         {/* Left Column: Product Image */}
-        <div className="w-full">
-          <div className="w-full aspect-[4/5] bg-slate-200 rounded-2xl flex items-center justify-center shadow-inner border border-slate-300 relative overflow-hidden">
+        <div className="w-full md:sticky md:top-24 h-fit">
+          <div className="w-full aspect-[3/4] bg-[#334155] rounded-2xl flex items-center justify-center shadow-inner border border-slate-600 relative overflow-hidden">
             {product.image_url ? (
               <img src={product.image_url} alt={product.product_name} className="absolute inset-0 w-full h-full object-cover" />
             ) : (
@@ -41,6 +44,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <p className="text-slate-600 leading-relaxed text-sm md:text-base">
               {product.description || "Premium B2B blank apparel designed for durability and comfort. Perfect for custom bulk printing or embroidery."}
             </p>
+            <div className="flex flex-wrap items-center gap-6 mt-6 text-sm text-slate-500 font-medium">
+              <span className="flex items-center gap-1.5">🧶 Material: 100% Polyester</span>
+              <span className="flex items-center gap-1.5">⚖️ Weight: 180 GSM</span>
+              <span className="flex items-center gap-1.5">💧 Feature: Moisture Wicking</span>
+            </div>
           </div>
 
           <AddToCart product={product} />

@@ -72,7 +72,7 @@ export default function QuotePage() {
         <Link href="/" className="px-6 py-3 rounded-xl font-medium text-center text-slate-600 hover:bg-slate-100 transition-colors">
           Add More Items
         </Link>
-        <button onClick={handleWhatsApp} className="bg-green-500 text-white px-8 py-3 rounded-xl font-bold text-lg hover:bg-green-600 shadow-md hover:shadow-lg transition-all active:scale-[0.98]">
+        <button onClick={handleWhatsApp} className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:-translate-y-1 transition-all duration-300 active:scale-[0.98]">
           Send on WhatsApp
         </button>
       </div>
