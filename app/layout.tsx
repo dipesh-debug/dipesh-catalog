@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-white text-slate-900 antialiased">
+      <body className="bg-[#111111] text-white antialiased">
         <CartProvider>
           <Navbar />
           <main className="min-h-screen pb-16">{children}</main>

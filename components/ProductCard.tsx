@@ -3,23 +3,20 @@ import Link from "next/link";
 export default function ProductCard({ imageUrl, title, basePrice, id }: { imageUrl: string, title: string, basePrice: number, id: string }) {
   return (
     <Link href={`/product/${id}`}>
-      <div className="rounded-xl overflow-hidden shadow-sm hover:shadow-2xl border border-slate-100 hover:border-white/20 transition-all duration-500 cursor-pointer group bg-white animate-fade-in-up">
-        <div className="aspect-[3/4] bg-[#2d2d2d] relative overflow-hidden rounded-2xl m-2">
-          <div className="absolute top-3 right-3 bg-blue-100 text-[#3b82f6] text-xs font-bold px-3 py-1 rounded-full z-10 shadow-sm">B2B Wholesale</div>
+      <div className="group cursor-pointer animate-fade-in-up block">
+        <div className="relative">
           {imageUrl ? (
-            <img src={imageUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <img src={imageUrl} alt={title} className="w-full h-auto drop-shadow-[0_20px_20px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-110 group-hover:-translate-y-4" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-500 font-medium">No Image</div>
+            <div className="w-full h-full flex items-center justify-center text-gray-600 font-medium tracking-widest uppercase text-sm">No Image</div>
           )}
         </div>
-        <div className="p-4">
-          <div className="h-24">
-            <h3 className="font-bold text-lg text-slate-900 truncate">{title}</h3>
-            <div className="mt-1 text-sm font-medium text-slate-500">₹{basePrice}</div>
-          </div>
-          <div className="mt-3 text-[#3b82f6] font-medium text-sm flex items-center gap-1 group-hover:text-blue-700 transition-colors">
-            View Options <span className="group-hover:translate-x-1 transition-transform">→</span>
-          </div>
+        
+        <div className="text-center mt-6 pb-2">
+          <h3 className="text-white font-bold text-xl uppercase tracking-wider truncate">{title}</h3>
+          <div className="text-gray-400 mt-2">₹{basePrice}</div>
+          {/* Sleek Animated Line Interaction */}
+          <div className="h-[1px] w-0 bg-white mx-auto group-hover:w-full transition-all duration-500 ease-out mt-4"></div>
         </div>
       </div>
     </Link>

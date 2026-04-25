@@ -37,8 +37,8 @@ export default function AddToCart({ product }: { product: any }) {
       <button 
         onClick={handleAddToQuote}
         disabled={selections.length === 0}
-        className={`w-full h-14 mt-4 font-bold rounded-xl transition-all active:scale-[0.98] text-xl text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-          isAdded ? 'bg-green-500 hover:bg-green-600 shadow-lg' : 'bg-[#3b82f6] hover:bg-blue-600 shadow-lg shadow-blue-500/30'
+        className={`w-full h-14 mt-6 font-bold rounded-full transition-all active:scale-[0.98] text-sm tracking-widest uppercase text-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+          isAdded ? 'bg-green-400 hover:bg-green-500 shadow-lg' : 'bg-white hover:bg-gray-200 shadow-lg shadow-white/10 hover:shadow-white/20'
         } ${selections.length > 0 && !isAdded ? 'animate-pulse' : ''}`}
       >
         {isAdded ? (

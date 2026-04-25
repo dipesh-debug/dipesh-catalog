@@ -1,25 +1,20 @@
 export default function Loading() {
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8 animate-pulse">
-      {/* Page Title Skeleton */}
-      <div className="h-10 w-64 bg-slate-200 rounded mb-8"></div>
-      
-      {/* Tabs Skeleton */}
-      <div className="flex gap-4 mb-8">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-10 w-24 bg-slate-200 rounded-full"></div>
-        ))}
-      </div>
+    <div className="min-h-screen w-full bg-[#111111] pt-32 animate-pulse">
+      <div className="w-full max-w-7xl mx-auto px-4">
+        {/* Tabs Skeleton */}
+        <div className="flex gap-4 mb-16 justify-center">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-8 w-24 bg-white/10 rounded-full border border-white/5"></div>
+          ))}
+        </div>
 
-      {/* Featured Collections Heading Skeleton */}
-      <div className="h-8 w-48 bg-slate-200 rounded mt-8 mb-4"></div>
-      <div className="h-px w-full bg-slate-200 mb-8"></div>
-
-      {/* Grid Skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <div key={i} className="border rounded-xl aspect-[4/5] bg-slate-100 shadow-sm"></div>
-        ))}
+        {/* Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="aspect-[3/4] bg-[#1a1a1a] rounded border border-white/5"></div>
+          ))}
+        </div>
       </div>
     </div>
   );

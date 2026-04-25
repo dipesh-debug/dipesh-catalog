@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import RoundNeckConfigurator from "@/components/RoundNeckConfigurator";
 
 export default function AdminDashboard() {
   const [name, setName] = useState("");
@@ -9,7 +10,12 @@ export default function AdminDashboard() {
   const [price, setPrice] = useState("");
   const [minOrder, setMinOrder] = useState<number>(50);
   const [imageUrl, setImageUrl] = useState("");
-  const [colors, setColors] = useState("");
+  const [designMode, setDesignMode] = useState<'color' | 'png'>('color');
+  const [colorPalette, setColorPalette] = useState<{name: string, hex: string}[]>([]);
+  const [currentColor, setCurrentColor] = useState('#ffffff');
+  const [colorLabel, setColorLabel] = useState('');
+  const [frontImage, setFrontImage] = useState('');
+  const [backImage, setBackImage] = useState('');
   
   const [status, setStatus] = useState({ type: "", message: "" });
   const [isLoading, setIsLoading] = useState(false);
@@ -62,16 +68,14 @@ export default function AdminDashboard() {
     setIsLoading(true);
     setStatus({ type: "", message: "" });
 
-    const colorArray = colors.split(",").map((c) => c.trim()).filter(Boolean);
-
     const { error } = await supabase.from("products").insert([
       {
         product_name: name,
         category: category,
         base_price: Number(price),
         min_order_quantity: minOrder,
-        image_url: imageUrl,
-        available_colors: colorArray,
+        image_url: imageUrl || (designMode === 'png' ? frontImage : ''),
+        available_colors: designMode === 'color' ? colorPalette : [],
       },
     ]);
 
@@ -85,7 +89,12 @@ export default function AdminDashboard() {
       setPrice("");
       setMinOrder(50);
       setImageUrl("");
-      setColors("");
+      setDesignMode("color");
+      setColorPalette([]);
+      setCurrentColor("#ffffff");
+      setColorLabel("");
+      setFrontImage("");
+      setBackImage("");
       // Refresh table
       fetchProducts();
     }
@@ -175,18 +184,96 @@ export default function AdminDashboard() {
                     className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white" />
                 </div>
 
-                {/* Colors */}
+                {/* Catalog Image URL */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Colors</label>
-                  <input required type="text" value={colors} onChange={(e) => setColors(e.target.value)} placeholder="e.g. Black, White, Navy"
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Catalog Image URL (Home Page)</label>
+                  <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://.../thumbnail.png"
                     className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white" />
                 </div>
 
-                {/* Image URL */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Image URL</label>
-                  <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://your-image-link.com/image.png"
-                    className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white" />
+                {/* 3D Configuration Settings */}
+                <div className="md:col-span-2 border-t border-slate-200 pt-6 mt-2">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-4">3D Configuration</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Design Mode</label>
+                      <select value={designMode} onChange={(e) => setDesignMode(e.target.value as 'color' | 'png')}
+                        className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white">
+                        <option value="color">Solid Color Mode</option>
+                        <option value="png">Custom PNG Mode</option>
+                      </select>
+                    </div>
+
+                    {designMode === 'color' ? (
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Add Garment Color</label>
+                        <div className="flex flex-col sm:flex-row items-center gap-4 p-2 border border-slate-200 rounded-xl bg-slate-50 focus-within:bg-white transition-colors w-full">
+                          <input
+                            type="color"
+                            value={currentColor}
+                            onChange={(e) => setCurrentColor(e.target.value)}
+                            className="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0 shrink-0"
+                          />
+                          <input
+                            type="text"
+                            value={colorLabel}
+                            onChange={(e) => setColorLabel(e.target.value)}
+                            placeholder="Color Name (e.g. Royal Blue)"
+                            className="flex-1 w-full bg-transparent text-slate-700 outline-none placeholder-slate-400 font-medium"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (colorLabel.trim() && !colorPalette.find(c => c.hex === currentColor)) {
+                                setColorPalette([...colorPalette, { name: colorLabel.trim(), hex: currentColor }]);
+                                setColorLabel('');
+                              }
+                            }}
+                            disabled={!colorLabel.trim()}
+                            className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors shrink-0"
+                          >
+                            + Add to Palette
+                          </button>
+                        </div>
+                        {colorPalette.length > 0 && (
+                          <div className="mt-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <label className="block text-xs font-semibold text-slate-500 mb-3 uppercase tracking-widest">Color Palette</label>
+                            <div className="flex flex-wrap gap-2">
+                              {colorPalette.map(color => (
+                                <div key={color.hex} className="flex items-center gap-2 bg-white rounded-full pr-2 border border-slate-200 shadow-sm overflow-hidden">
+                                  <div className="w-8 h-8 shrink-0" style={{ backgroundColor: color.hex }} />
+                                  <span className="text-xs font-medium text-slate-700">{color.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setColorPalette(colorPalette.filter(c => c.hex !== color.hex))}
+                                    className="text-slate-400 hover:text-red-500 ml-1 focus:outline-none"
+                                    title="Remove color"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Front Image URL</label>
+                          <input type="text" value={frontImage} onChange={(e) => setFrontImage(e.target.value)} placeholder="https://.../front.png"
+                            className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Back Image URL</label>
+                          <input type="text" value={backImage} onChange={(e) => setBackImage(e.target.value)} placeholder="https://.../back.png"
+                            className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white" />
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -200,12 +287,13 @@ export default function AdminDashboard() {
           {/* Right: Live Preview */}
           <div className="bg-white rounded-xl shadow-xl p-6 border border-slate-100 flex flex-col h-full">
             <h2 className="text-xl font-semibold text-slate-800 mb-6 border-b pb-4">Live Preview</h2>
-            <div className="flex-1 flex items-center justify-center bg-slate-50 rounded-2xl border border-dashed border-slate-300 overflow-hidden relative aspect-[3/4] mb-4">
-              {imageUrl ? (
-                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-slate-400 text-sm font-medium">Image Preview</span>
-              )}
+            <div className="flex-1 flex items-center justify-center bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden relative min-h-[500px] mb-4">
+              <RoundNeckConfigurator 
+                frontColor={designMode === 'color' ? currentColor : '#ffffff'} 
+                backColor={designMode === 'color' ? currentColor : '#ffffff'} 
+                frontImage={designMode === 'png' ? frontImage : null} 
+                backImage={designMode === 'png' ? backImage : null} 
+              />
             </div>
             <div className="text-center">
               <h3 className="font-bold text-lg text-slate-900 truncate">{name || "Product Name"}</h3>

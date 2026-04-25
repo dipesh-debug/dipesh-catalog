@@ -16,11 +16,11 @@ export default function ColorQuantitySelector({ availableColors, onSelectionChan
   return (
     <div className="space-y-4">
       {availableColors.map(color => (
-        <div key={color} className="flex items-center justify-between p-3 border rounded-lg bg-white">
-          <span className="font-medium text-slate-700">{color}</span>
+        <div key={color} className="flex items-center justify-between p-3 border border-white/10 rounded-lg bg-black/40 backdrop-blur-md">
+          <span className="font-medium text-white">{color}</span>
           <input 
             type="number" min="0" placeholder="Qty"
-            className="w-24 p-2 border border-slate-200 rounded-md text-center focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow"
+            className="w-24 p-2 border border-white/20 rounded-md text-center bg-transparent text-white focus:border-white focus:ring-1 focus:ring-white outline-none transition-shadow placeholder-gray-600"
             value={selections[color] || ""}
             onChange={(e) => handleQuantityChange(color, parseInt(e.target.value))}
           />
