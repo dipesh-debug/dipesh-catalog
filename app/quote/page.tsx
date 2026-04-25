@@ -7,18 +7,25 @@ export default function QuotePage() {
 
   const handleWhatsApp = () => {
     const phoneNumber = "+9779746851286"; // Update with your actual WhatsApp number! e.g., 919876543210
-    let message = "Hello, I would like to request a quote for the following items:%0A%0A";
+    
+    let totalQty = 0;
+    let message = "*📦 NEW QUOTE REQUEST - Dipesh Catalog*\n";
+    message += "*Customer:* [Enter Name/Company]\n\n";
+    message += "*Order Details:*\n\n";
     
     cart.forEach(item => {
-      message += `*${item.title}* (₹${item.basePrice})%0A`;
+      message += `*${item.title}* (₹${item.basePrice})\n`;
       item.selections.forEach(sel => {
-        message += `- ${sel.color}: ${sel.quantity} pcs%0A`;
+        totalQty += sel.quantity;
+        message += `- ${sel.color}: ${sel.quantity} pcs\n`;
       });
-      message += `%0A`;
+      message += `\n`;
     });
     
-    message += `*Estimated Total: ₹${getTotalPrice()}*%0A`;
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    message += `*ESTIMATED TOTAL: ₹${getTotalPrice()}*\n`;
+    message += `*MOQ STATUS:* ${totalQty >= 50 ? '✅ Met' : '⚠️ Below Minimum Order Quantity'}\n`;
+
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   if (cart.length === 0) {
