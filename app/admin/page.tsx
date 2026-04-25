@@ -17,6 +17,7 @@ export default function AdminDashboard() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [secretKey, setSecretKey] = useState("");
   const [products, setProducts] = useState<any[]>([]);
+  const [leads, setLeads] = useState<any[]>([]);
 
   // Check localStorage for auth on mount
   useEffect(() => {
@@ -28,12 +29,32 @@ export default function AdminDashboard() {
 
   // Fetch products when authenticated
   useEffect(() => {
-    if (isAuthenticated) fetchProducts();
+    if (isAuthenticated) {
+      fetchProducts();
+      fetchLeads();
+    }
   }, [isAuthenticated]);
 
   const fetchProducts = async () => {
     const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
     if (data) setProducts(data);
+  };
+
+  const fetchLeads = async () => {
+    const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
+    if (data) setLeads(data);
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const diffInHours = Math.abs(new Date().getTime() - date.getTime()) / 36e5;
+    
+    if (diffInHours < 24) {
+      const hours = Math.floor(diffInHours);
+      if (hours === 0) return `${Math.floor(diffInHours * 60)} mins ago`;
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    }
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -230,6 +251,39 @@ export default function AdminDashboard() {
                           <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active
                         </span>
                       </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Bottom: Leads Inbox Table */}
+        <div className="mt-12 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-100 bg-white">
+            <h2 className="text-xl font-semibold text-slate-800">Incoming Inquiries</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
+                  <th className="p-4 font-semibold">Date</th>
+                  <th className="p-4 font-semibold">Customer Name</th>
+                  <th className="p-4 font-semibold">Business</th>
+                  <th className="p-4 font-semibold text-right">Quote Total</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-sm">
+                {leads.length === 0 ? (
+                  <tr><td colSpan={4} className="p-8 text-center text-slate-500">No leads yet. They will appear here!</td></tr>
+                ) : (
+                  leads.map((lead) => (
+                    <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-4 text-slate-500 whitespace-nowrap">{formatTime(lead.created_at)}</td>
+                      <td className="p-4 font-medium text-slate-900">{lead.customer_name}</td>
+                      <td className="p-4 text-slate-600">{lead.business_name}</td>
+                      <td className="p-4 text-slate-900 font-bold text-right">₹{lead.quote_total}</td>
                     </tr>
                   ))
                 )}
