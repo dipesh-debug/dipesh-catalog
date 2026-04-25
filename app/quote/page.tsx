@@ -1,16 +1,38 @@
 "use client";
+
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 export default function QuotePage() {
   const { cart, removeFromQuote, getTotalPrice } = useCart();
+  const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
 
-  const handleWhatsApp = () => {
+  // Load saved details on mount
+  useEffect(() => {
+    const storedName = localStorage.getItem("dipesh_customer_name");
+    const storedCompany = localStorage.getItem("dipesh_customer_company");
+    if (storedName) setName(storedName);
+    if (storedCompany) setCompany(storedCompany);
+  }, []);
+
+  // Save details whenever they change
+  useEffect(() => {
+    localStorage.setItem("dipesh_customer_name", name);
+    localStorage.setItem("dipesh_customer_company", company);
+  }, [name, company]);
+
+  const isValid = name.trim().length >= 3 && company.trim().length >= 3;
+
+  const handleWhatsApp = async () => {
     const phoneNumber = "+9779746851286"; // Update with your actual WhatsApp number! e.g., 919876543210
     
     let totalQty = 0;
     let message = "*📦 NEW QUOTE REQUEST - Dipesh Catalog*\n";
-    message += "*Customer:* [Enter Name/Company]\n\n";
+    message += `*Customer:* ${name.trim()}\n`;
+    message += `*Company:* ${company.trim()}\n\n`;
     message += "*Order Details:*\n\n";
     
     cart.forEach(item => {
@@ -26,6 +48,16 @@ export default function QuotePage() {
     message += `*MOQ STATUS:* ${totalQty >= 50 ? '✅ Met' : '⚠️ Below Minimum Order Quantity'}\n`;
 
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, "_blank");
+
+    // Save the lead to Supabase
+    await supabase.from('leads').insert([
+      {
+        customer_name: name.trim(),
+        business_name: company.trim(),
+        quote_total: getTotalPrice(),
+        items_json: cart
+      }
+    ]);
   };
 
   if (cart.length === 0) {
@@ -75,11 +107,28 @@ export default function QuotePage() {
         </div>
       </div>
 
+      {/* Contact Details Form */}
+      <div className="bg-white border rounded-2xl shadow-sm p-6 mb-8">
+        <h2 className="text-xl font-semibold text-slate-800 mb-4">Contact Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. John Doe"
+              className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Business/Organization Name</label>
+            <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. Doe Athletics"
+              className="w-full p-3 border border-slate-200 rounded-xl focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] outline-none transition-shadow bg-slate-50 focus:bg-white" />
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col sm:flex-row justify-end gap-4">
         <Link href="/" className="px-6 py-3 rounded-xl font-medium text-center text-slate-600 hover:bg-slate-100 transition-colors">
           Add More Items
         </Link>
-        <button onClick={handleWhatsApp} className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:-translate-y-1 transition-all duration-300 active:scale-[0.98]">
+        <button onClick={handleWhatsApp} disabled={!isValid} className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:-translate-y-1 transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none">
           Send on WhatsApp
         </button>
       </div>
